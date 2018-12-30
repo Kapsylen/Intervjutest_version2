@@ -11,14 +11,17 @@ import java.util.List;
 public class CountryLanguageService {
 
     @Autowired
-    CountryLanguageJpaRepository countryLanguageJpaRepo;
-
+    CountryLanguageJpaRepository countryLangJpaRepo;
 
 
     public List<String> findOfficialLangByCountryName(String name){
 
-        return countryLanguageJpaRepo.findOfficialLangByCountryName(name);
+        return countryLangJpaRepo.findOfficialLangByCountryName(name);
 
     }
 
+
+    public List<String> getAllCountriesByLanguageAndIsOfficial(Character isOfficial, String language) {
+       return countryLangJpaRepo.getAllCountriesByLanguageAndIsOfficial(isOfficial, language);
+    }
 }

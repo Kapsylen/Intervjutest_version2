@@ -3,14 +3,12 @@ package se.arbetsformedlingen.rest.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import se.arbetsformedlingen.rest.execption.CustomErrorType;
 import se.arbetsformedlingen.rest.model.City;
 import se.arbetsformedlingen.rest.service.CountryLanguageService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -21,7 +19,7 @@ public class CountryLanguageController {
     CountryLanguageService countryLangService;
 
 
-    @GetMapping(value = "/language/{name}")
+    @GetMapping(value = "/languages/{name}")
     public ResponseEntity<List<String>> findOfficialLangByCountryName(@PathVariable(name = "name") String name){
 
         if (countryLangService.findOfficialLangByCountryName(name).isEmpty()) {
@@ -33,7 +31,16 @@ public class CountryLanguageController {
     }
 
 
+    @GetMapping(
+    value = "/languages/countries",
+    params = { "isOfficial","language" })
+    public List<String> findAllCountriesByOfficialLanguage(@RequestParam(value = "isOfficial") Character isOfficial,
+                                   @RequestParam(value = "language") String language) {
 
+        List<String> countries = countryLangService.getAllCountriesByLanguageAndIsOfficial(isOfficial, language);
+
+        return countries;
+    }
 
 
 
