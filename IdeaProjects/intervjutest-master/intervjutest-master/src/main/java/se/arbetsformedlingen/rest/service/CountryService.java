@@ -58,7 +58,7 @@ public class CountryService {
       return countryJpaRep.deleteCountryByCode(name);
     }
 
-    public List<Country> findCountriesByPopulationIsGreaterThan(Integer population) {
+    public List<Country> findCountriesByPopulationIsGreaterThanXPopulation(Integer population) {
         return countryJpaRep.findCountriesByPopulationIsGreaterThan(population);
     }
 

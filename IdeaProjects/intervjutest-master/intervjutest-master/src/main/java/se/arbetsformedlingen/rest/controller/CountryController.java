@@ -28,11 +28,11 @@ public class CountryController {
     //TODO: Controllers persists data via CountryJpaRepository
 
 
-//Not done!!! How to handle wrong spelling
+
     @GetMapping(value = "/countries")
     @ResponseBody
     public ResponseEntity<List<String>> countries(){
-        if(countryService.listAllCountries() == null){
+        if(countryService.listAllCountries().isEmpty()){
 
             return new ResponseEntity(new CustomErrorType("No countries found"),HttpStatus.NOT_FOUND);
         }
@@ -90,8 +90,8 @@ public class CountryController {
 
     @GetMapping(value = "/counties/population/greaterthan/{population}")
     @ResponseBody
-    public ResponseEntity<List<Country>> findCountriesByPopulationIsGreaterThan (@PathVariable(value = "population") Integer population){
-        return new ResponseEntity(countryService.findCountriesByPopulationIsGreaterThan(population), HttpStatus.FOUND);
+    public ResponseEntity<List<Country>> findCountriesByPopulationIsGreaterThanXPopulation (@PathVariable(value = "population") Integer population){
+        return new ResponseEntity(countryService.findCountriesByPopulationIsGreaterThanXPopulation(population), HttpStatus.FOUND);
     }
 
     @GetMapping(value = "/counties/governmentform/{govform}")
