@@ -3,10 +3,14 @@ package se.arbetsformedlingen.rest.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.arbetsformedlingen.rest.model.City;
+import se.arbetsformedlingen.rest.model.Country;
 import se.arbetsformedlingen.rest.repository.CityDAO;
 import se.arbetsformedlingen.rest.repository.CityJpaRepository;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -31,11 +35,14 @@ public class CityService {
 
     public  List<City> findAllByCountryCode(String code){
 
-        List<City> countries = cityJpaRep.findAllByCountryCode(code);
+        List<City> cities = cityJpaRep.findAllByCountryCode(code);
 
-        countries.forEach(c -> c.getName().toUpperCase());
 
-        return countries;
+        cities.sort(Comparator.comparing(City::getName, Comparator.nullsFirst(Comparator.naturalOrder())));
+
+
+
+        return cities;
     }
 
 
