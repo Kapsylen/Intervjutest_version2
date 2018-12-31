@@ -18,7 +18,7 @@ public class CountryService {
     @Autowired
     CountryJpaRepository countryJpaRep;
 
-    public List<String> listAllCountries() {
+    public List<Country> listAllCountries() {
         return  countryJpaRep.listAllCountries();
     }
 

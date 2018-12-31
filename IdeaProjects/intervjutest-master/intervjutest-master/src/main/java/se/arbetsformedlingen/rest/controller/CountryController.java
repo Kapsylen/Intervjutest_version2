@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import se.arbetsformedlingen.rest.execption.CustomErrorType;
+import se.arbetsformedlingen.rest.exception.CountryConflictException;
+import se.arbetsformedlingen.rest.exception.CountryNotFoundException;
 import se.arbetsformedlingen.rest.model.Country;
 import se.arbetsformedlingen.rest.service.CountryService;
 
@@ -31,10 +32,10 @@ public class CountryController {
 
     @GetMapping(value = "/countries")
     @ResponseBody
-    public ResponseEntity<List<String>> countries(){
+    public ResponseEntity<List<Country>> countries(){
         if(countryService.listAllCountries().isEmpty()){
 
-            return new ResponseEntity(new CustomErrorType("No countries found"),HttpStatus.NOT_FOUND);
+            throw new CountryNotFoundException("No countries found");
         }
         return ResponseEntity.ok().body(countryService.listAllCountries());
 
@@ -45,8 +46,8 @@ public class CountryController {
     public ResponseEntity<Country> country(@PathVariable(value = "name", required = true) String name){
         if(countryService.findCountry(name) == null){
 
-            return new ResponseEntity(new CustomErrorType("Unable to find. A country with name " +
-                    name + " doesn't exist."),HttpStatus.NOT_FOUND);
+            throw new CountryNotFoundException("Unable to find. A country with name " +
+                    name + " doesn't exist.");
         }
         Country country = countryService.findCountry(name);
         return ResponseEntity.ok().body(country);
@@ -56,8 +57,8 @@ public class CountryController {
     public ResponseEntity<Country> add(@RequestBody Country country) {
 
         if(countryService.isCountryExist(country)){
-            return new ResponseEntity(new CustomErrorType("Unable to create. A country with country code " +
-                    country.getCode() + " already exist."), HttpStatus.CONFLICT);
+           throw new CountryConflictException("Unable to create. A country with country code " +
+                   country.getCode() + " already exist.");
         }
         countryService.addCountry(country);
         return ResponseEntity.ok().body(country);
@@ -71,9 +72,8 @@ public class CountryController {
 
             return ResponseEntity.ok().body(countryService.update(country));
         }
-            return new ResponseEntity(new CustomErrorType("Unable to update. A country with country code " +
-                    country.getCode() + " doesn't exist."), HttpStatus.NOT_FOUND);
-
+            throw new CountryNotFoundException("Unable to update. A country with country code " +
+                    country.getCode() + " doesn't exist.");
     }
 
     @DeleteMapping(value = "/country/{code}")
@@ -83,8 +83,8 @@ public class CountryController {
             Integer found = countryService.deleteCountry(code);
             return ResponseEntity.ok(found);
         }
-        return new ResponseEntity(new CustomErrorType("Unable to delete. A country with country country code " +
-                code + " doesn't exist."), HttpStatus.NOT_FOUND);
+        throw new CountryNotFoundException("Unable to delete. A country with country country code " +
+                code + " doesn't exist.");
 
     }
 

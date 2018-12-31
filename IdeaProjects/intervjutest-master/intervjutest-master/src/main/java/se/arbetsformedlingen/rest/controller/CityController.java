@@ -1,12 +1,11 @@
 package se.arbetsformedlingen.rest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import se.arbetsformedlingen.rest.execption.CustomErrorType;
+import se.arbetsformedlingen.rest.exception.CityConflictException;
+import se.arbetsformedlingen.rest.exception.CityNotFoundException;
 import se.arbetsformedlingen.rest.model.City;
-import se.arbetsformedlingen.rest.model.Country;
 import se.arbetsformedlingen.rest.service.CityService;
 
 import java.util.List;
@@ -31,54 +30,56 @@ public class CityController {
     //TODO: Controllers persists data via CityJpaRepository
 
 
-
-    @GetMapping(value = "/cities/{name}")
+    @GetMapping(value = "/city/{name}")
     @ResponseBody
-    public ResponseEntity<List<City>> cities(@PathVariable(value = "name") String name){
+    public ResponseEntity<List<City>> cities(@PathVariable(value = "name") String name) throws CityNotFoundException {
 
-        if (cityService.findAllByName(name).isEmpty()) {
-            return new ResponseEntity(new CustomErrorType("Unable to find. A City with name " +
-                    name + " doesn't exist."),HttpStatus.NOT_FOUND);
+    List<City> cities = cityService.findAllByName(name);
+        if (cities.isEmpty()) {
+
+            throw new CityNotFoundException("Unable to find. A City with name " +
+                    name + " doesn't exist.");
         }
-        List<City> cities = cityService.findAllByName(name);
         return ResponseEntity.ok().body(cities);
 
-    }
+      }
 
+    @PostMapping(value = "/cities")
+    public ResponseEntity<City> add(@RequestBody City city) throws CityConflictException {
 
-    @PostMapping(value = "/city")
-    public ResponseEntity<City> add(@RequestBody City city) {
-
-
-        if(cityService.isCityExist(city)){
-            return new ResponseEntity(new CustomErrorType("Unable to create. A city with name " +
-                    city.getName() + " already exist."), HttpStatus.CONFLICT);
+        Integer id = city.getId();
+        if(cityService.existCityById(id)){
+            throw new CityConflictException("City with id "+ id  +" already exist.");
         }
+
         cityService.addCity(city);
         return ResponseEntity.ok().body(city);
 
     }
 
-    @PutMapping(value = "/city")
-    public ResponseEntity<City> update(@RequestBody City city) {
-        if(cityService.isCityExist(city)){
+    @PutMapping(value = "/cities")
+    public ResponseEntity<City> update(@RequestBody City city) throws CityNotFoundException {
+        Integer id = city.getId();
+        if(cityService.existCityById(id)){
 
             return ResponseEntity.ok().body(cityService.update(city));
         }
-        return new ResponseEntity(new CustomErrorType("Unable to update. A city with country code " +
-                city.getCountry().getCode() + " and name " +  city.getName() + " doesn't exist."), HttpStatus.NOT_FOUND);
+        throw new CityNotFoundException("Unable to update. A city with country code " +
+                city.getCountry().getCode() + " and name " +  city.getName() + " doesn't exist.");
 
     }
 
-    @DeleteMapping(value = "/city/{name}/{code}")
-    public ResponseEntity<Integer> delete(@PathVariable(name="name") String name, @PathVariable(name = "code") String code){
+    @DeleteMapping(value = "/city/{id}")
+    public ResponseEntity<Integer> delete(@PathVariable(name="id") Integer id) throws CityNotFoundException {
 
-        if(cityService.deleteCity(name,code) > 0){
-            Integer found = cityService.deleteCity(name, code);
-            return ResponseEntity.ok(found);
+        Integer found = cityService.deleteCity(id);
+
+        if(found > 0){
+
+            return ResponseEntity.ok().body(found);
         }
-        return new ResponseEntity(new CustomErrorType("Unable to delete. A country with country country name " +
-                name + "and country code" + code + " doesn't exist."), HttpStatus.NOT_FOUND);
+        throw new CityNotFoundException("Unable to delete. A city with id " +
+                id + " doesn't exist.");
 
     }
 
@@ -86,11 +87,11 @@ public class CityController {
 
     @GetMapping(value = "/cities/code/{code}")
     @ResponseBody
-    public ResponseEntity<List<City>> findAllByCountryCode(@PathVariable(value = "code") String code){
+    public ResponseEntity<List<City>> findAllByCountryCode(@PathVariable(value = "code") String code) throws CityNotFoundException {
 
         if(cityService.findAllByCountryCode(code).isEmpty()){
-            return new ResponseEntity(new CustomErrorType("Unable to find. No City with country code " +
-                    code + " found."),HttpStatus.NOT_FOUND);
+          throw new CityNotFoundException("Unable to find. No City with country code " +
+                  code + " found.");
         }
         List<City> cities = cityService.findAllByCountryCode(code);
             return ResponseEntity.ok().body(cities);
@@ -99,15 +100,16 @@ public class CityController {
 
     @GetMapping(value = "/cities/region/{region}")
     @ResponseBody
-    public ResponseEntity<List<City>> findAllByCountryRegion(@PathVariable(value = "region") String region){
+    public ResponseEntity<List<City>> findAllByCountryRegion(@PathVariable(value = "region") String region) throws CityNotFoundException {
         if(cityService.findAllByCountryRegion(region).isEmpty()){
-            return new ResponseEntity(new CustomErrorType("Unable to find. No City in region " +
-                    region + " found."),HttpStatus.NOT_FOUND);
+           throw new CityNotFoundException("Unable to find. No City in region " +
+                   region + " found.");
         }
         List<City> cities = cityService.findAllByCountryRegion(region);
         return ResponseEntity.ok().body(cities);
 
     }
+
 
 
 

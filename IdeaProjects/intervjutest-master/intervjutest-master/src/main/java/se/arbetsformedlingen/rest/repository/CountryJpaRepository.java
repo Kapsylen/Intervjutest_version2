@@ -15,8 +15,8 @@ public interface CountryJpaRepository extends JpaRepository<Country, Integer> {
 
     boolean existsByCode(String code);
 
-    @Query("SELECT c.name FROM Country c")
-    List<String> listAllCountries();
+    @Query("SELECT c FROM Country c")
+    List<Country> listAllCountries();
 
     Country findByName(String name);
 
@@ -26,10 +26,10 @@ public interface CountryJpaRepository extends JpaRepository<Country, Integer> {
 
     List<Country> findAllByGovernmentForm(String name);
 
-    @Query("SELECT c.name FROM City c, Country k where c.id = k.capital")
+    @Query("SELECT c.name FROM City c, Country k WHERE c.id = k.capital")
     List<String> findAllCapitals();
 
-    @Query("SELECT c.name, c.population FROM City c, Country k where k.continent = :continent AND c.country = k.code AND c.population >= :population")
+    @Query("SELECT c.name, c.population FROM City c, Country k WHERE k.continent = :continent AND c.country = k.code AND c.population >= :population")
     List<Country> findAllCitiesInAContinentWithAPopulationEqualOrGreaterThanX(@Param("continent")String continent, @Param("population") Integer population);
 
 }

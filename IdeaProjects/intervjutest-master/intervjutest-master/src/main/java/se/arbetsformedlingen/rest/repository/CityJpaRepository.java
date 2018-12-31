@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import se.arbetsformedlingen.rest.model.City;
+import se.arbetsformedlingen.rest.model.Country;
 
 import java.util.List;
 
@@ -12,13 +13,13 @@ import java.util.List;
 public interface CityJpaRepository extends JpaRepository<City, Integer> {
 
 
-    boolean existsCityByIdAndCountry_Code(Integer id, String code);
+    boolean existsCityById(Integer id);
 
-    Integer deleteCityByNameAndCountry_Code(String name, String code);
+    Integer deleteCityById(Integer id);
 
     City findCityByNameAndCountry_Code(String name, String code);
 
-    List<City> findAllByName(String name);
+    List<City> findCitiesByName(String name);
 
     List<City> findAllByCountryCode(String code);
 

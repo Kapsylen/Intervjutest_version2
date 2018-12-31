@@ -3,7 +3,6 @@ package se.arbetsformedlingen.rest.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.arbetsformedlingen.rest.model.City;
-import se.arbetsformedlingen.rest.model.Country;
 import se.arbetsformedlingen.rest.repository.CityDAO;
 import se.arbetsformedlingen.rest.repository.CityJpaRepository;
 
@@ -32,7 +31,11 @@ public class CityService {
 
     public  List<City> findAllByCountryCode(String code){
 
-        return cityJpaRep.findAllByCountryCode(code);
+        List<City> countries = cityJpaRep.findAllByCountryCode(code);
+
+        countries.forEach(c -> c.getName().toUpperCase());
+
+        return countries;
     }
 
 
@@ -46,14 +49,9 @@ public class CityService {
         return cityJpaRep.save(city);
     }
 
-    public boolean isCityExist(City city) {
-        Integer id = city.getId();
-        String code = city.getCountry().getCode();
-        return cityJpaRep.existsCityByIdAndCountry_Code(id, code);
-    }
 
     public List<City> findAllByName(String name) {
-       return cityJpaRep.findAllByName(name);
+       return cityJpaRep.findCitiesByName(name);
     }
 
 
@@ -75,7 +73,14 @@ public class CityService {
     }
 
     @Transactional
-    public Integer deleteCity(String name, String code) {
-        return cityJpaRep.deleteCityByNameAndCountry_Code(name, code);
+    public Integer deleteCity(Integer id) {
+        return cityJpaRep.deleteCityById(id);
     }
+
+
+    public boolean existCityById(Integer id) {
+       return cityJpaRep.existsCityById(id);
+    }
+
+
 }
